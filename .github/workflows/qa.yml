@@ -1,0 +1,43 @@
+name: QA em produção
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "0 9 * * 1"  # segunda, 06:00 em Brasília — uma vez por semana, para não pesar no site
+  workflow_dispatch:
+
+concurrency:
+  group: qa
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Dependências
+        run: |
+          pip install -r requirements.txt
+          playwright install --with-deps chromium
+
+      - name: Testes
+        run: pytest --html=report/index.html --self-contained-html
+
+      - name: Relatório
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorio-qa
+          path: |
+            report/
+            test-results/
+          retention-days: 30
