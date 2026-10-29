@@ -42,7 +42,7 @@ conteúdo que existe de verdade.
 ## Achados
 
 Na primeira execução contra produção (28/10/2026), a suíte encontrou 4 problemas que ninguém tinha relatado.
-Um deles foi corrigido no mesmo dia — e o `xfail(strict=True)` avisou sozinho. Detalhes no fim dos
+Um deles é intermitente e chegou a parecer corrigido — o porquê, e o que mudou na marcação, está no fim dos
 [estudos de caso](docs/estudos-de-caso.md#achados-desta-suíte-28102026).
 
 ## Como rodar

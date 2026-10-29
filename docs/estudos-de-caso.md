@@ -134,8 +134,16 @@ tirar a marca.
 | A1 | Página de clube não declara `og:image`: o link vai pro WhatsApp sem imagem, mesmo quando o clube tem brasão | `test_share_preview.py` |
 | A2 | Evento sem foto: as meta tags declaram `image/jpeg`, o servidor entrega PNG | `test_share_preview.py` |
 | A3 | Oficinas e postos de uma importação regional caíram todos na mesma coordenada (centro da cidade): 7 e 9 pinos empilhados | `test_map_api.py` |
-| A4 | A home disparava erro de hidratação do React (#418) em toda visita — **corrigido no mesmo dia** | `test_public_pages.py` |
+| A4 | Home e Notícias disparam erro de hidratação do React (#418) de forma **intermitente** | `test_public_pages.py` |
 
-**Como o A4 foi fechado.** Ele estava marcado como `xfail(strict=True)`. Horas depois, uma mudança de cache publicada
-na home eliminou o erro, e na execução seguinte o teste saiu como **XPASS e reprovou** — exatamente para avisar que
-o problema tinha sumido e a marca precisava sair. Sem isso, um `xfail` esquecido esconderia uma regressão futura.
+**O A4 enganou uma vez — e a lição ficou.** Ele foi marcado como `xfail(strict=True)`. Horas depois a home passou a
+abrir sem erro, o teste saiu como XPASS e eu tirei a marca achando que o problema tinha sido resolvido por uma mudança
+de cache publicada no mesmo dia. Na primeira execução no GitHub Actions, de outra máquina e outro horário, o erro
+voltou na home e apareceu também em Notícias.
+
+A causa em Notícias é clássica: a página mostra "há 12min" calculado na hora de montar o HTML; com o HTML agora em
+cache por alguns minutos, o navegador recalcula "há 15min", o texto não bate e o React acusa a divergência. O erro
+depende de **quanto tempo** o HTML ficou em cache, por isso vai e volta.
+
+Ficou `xfail(strict=False)`: num bug intermitente, um teste que passa não prova correção. Só sai a marca depois de
+corrigir a causa e ver o teste passar em várias execuções seguidas.

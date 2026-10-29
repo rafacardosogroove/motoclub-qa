@@ -10,10 +10,14 @@ from support.ui import assert_no_horizontal_scroll, open_page, wait_hydrated
 
 pytestmark = pytest.mark.smoke
 
+# Achado A4 (docs/estudos-de-caso.md): erro de hidratação do React (#418) que vai e volta conforme a idade do HTML
+# em cache. Intermitente, por isso strict=False: passar de vez em quando não prova que foi corrigido.
+HYDRATION = pytest.mark.xfail(reason="achado A4: erro de hidratação React #418, intermitente", strict=False)
+
 STATIC = [
-    "/", "/eventos", "/eventos?view=lista", "/eventos?view=mes", "/clubes", "/motoclubes", "/mapa",
+    pytest.param("/", marks=HYDRATION), "/eventos", "/eventos?view=lista", "/eventos?view=mes", "/clubes", "/motoclubes", "/mapa",
     "/voce-viu", "/reportar-roubo", "/ofertas", "/bandas", "/bares", "/oficinas", "/lojas", "/locutores",
-    "/servicos-evento", "/motociclistas", "/motos-a-venda", "/noticias", "/memorial", "/ranking-de-km",
+    "/servicos-evento", "/motociclistas", "/motos-a-venda", pytest.param("/noticias", marks=HYDRATION), "/memorial", "/ranking-de-km",
     "/para-clubes", "/termos-de-uso", "/politica-de-privacidade", "/enviar-flyer", "/login", "/cadastro",
     "/esqueci-senha",
 ]
